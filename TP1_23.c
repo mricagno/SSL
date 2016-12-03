@@ -9,7 +9,8 @@ enum states {
 	POSSIBLE_COMMENT,
 	LINE_COMMENT,
 	COMMENT,
-	POSSIBLE_END_OF_COMMENT
+	POSSIBLE_END_OF_COMMENT,
+	STRING
 };
 
 //DECLARACION DE FUNCIONES
@@ -19,6 +20,7 @@ int read_char_in_pc_state(char char_from_input_array);
 int read_char_in_lc_state(char char_from_input_array);
 int read_char_in_comment_state(char char_from_input_array);
 int read_char_in_peoc_state(char char_from_input_array);
+int read_char_in_string_state(char char_from_input_array);
 int print_input_array_until_end_of_string(char* part_of_input_array,int i);
 bool run_program_again();
 void empty_array_for_new_program(char *input_array);
@@ -53,14 +55,23 @@ int main()
 			{
 			case NO_COMMENT:
 				function_return=read_char_in_nc_state(input_array[input_char]);
-				if(function_return==POSSIBLE_COMMENT)
-				{
+				if(function_return==POSSIBLE_COMMENT){
 					state=POSSIBLE_COMMENT;
 					break;
+				} else if (function_return==STRING){
+					state=STRING;
+					putchar(input_array[input_char]);
+					break;
 				}
-				else if (input_array[input_char]=='"')
+				putchar(input_array[input_char]);
+			break;
+			case STRING:
+				function_return=read_char_in_string_state(input_array[input_char]);
+				if(function_return==NO_COMMENT)
 				{
-					input_char=print_input_array_until_end_of_string(input_array,input_char);
+					state=NO_COMMENT;
+					putchar(input_array[input_char]);
+					break;
 				}
 				putchar(input_array[input_char]);
 			break;
@@ -124,7 +135,8 @@ int get_line(char s[], int max){
 int read_char_in_nc_state(char char_from_input_array){
 	if(char_from_input_array=='/')
 		return POSSIBLE_COMMENT;
-
+	if(char_from_input_array=='"')
+		return STRING;
 	return NO_COMMENT;
 
 }	//La funcion analiza si el caracter que se recibe puede indicar el inicio de un comentario
@@ -164,16 +176,11 @@ int read_char_in_peoc_state(char char_from_input_array){
 	return COMMENT;
 }	//La funcion analiza si finalizo el comentario o no
 //-----------------------------------------------------------
-int print_input_array_until_end_of_string(char* part_of_input_array, int i){
-	do
-	{
-		putchar(part_of_input_array[i]);
-		i++;
-	}
-	while(part_of_input_array[i]!='"');
-
-	return i;
-}	//La funcion imprime todos los caracteres que esten entre ""
+int read_char_in_string_state(char char_from_input_array){
+	if(char_from_input_array=='"')
+		return NO_COMMENT;
+	return COMMENT;
+}	//La funcion analiza si el string termino o no
 //------------------------------------------------------------
 bool run_program_again(){
 
