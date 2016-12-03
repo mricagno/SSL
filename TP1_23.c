@@ -1,5 +1,6 @@
 //DIRECTIVAS AL PREPROCESADOR
 #include<stdio.h>
+#include<stdbool.h>
 #define MAXLENGTH 1024
 
 //ESTADOS DEL AUTOMATA
@@ -18,6 +19,9 @@ int read_char_in_pc_state(char char_from_input_array);
 int read_char_in_lc_state(char char_from_input_array);
 int read_char_in_comment_state(char char_from_input_array);
 int read_char_in_peoc_state(char char_from_input_array);
+int print_input_array_until_end_of_string(char* part_of_input_array,int i);
+bool run_program_again();
+void empty_array_for_new_program(char *input_array);
 
 int main()
 {
@@ -29,12 +33,17 @@ int main()
 
 	enum states state;
 
+	bool finish_program;
+
 	input_char=0;
 	state=NO_COMMENT;
+	finish_program = false;
 
+	while(finish_program==false)
+	{
+	puts("--------------------------------------------------");
 	puts("Ingresar el codigo. Apretar Ctrl+D para finalizar:\n");
-	puts("\n----------------------------------------\n");
-
+	empty_array_for_new_program(input_array);
 	while((len=get_line(input_array,MAXLENGTH))>0)
 	{
 		while(input_array[input_char]!='\0')
@@ -48,6 +57,10 @@ int main()
 				{
 					state=POSSIBLE_COMMENT;
 					break;
+				}
+				else if (input_array[input_char]=='"')
+				{
+					input_char=print_input_array_until_end_of_string(input_array,input_char);
 				}
 				putchar(input_array[input_char]);
 			break;
@@ -83,6 +96,10 @@ int main()
 			}
 			input_char++;	//Para poder trabajar con el siguiente caracter en la proxima iteracion
 		}
+		input_char=0;	//Por si lo quieren reejecutar sin pasar por el menu
+	}
+	finish_program = run_program_again();
+
 	}
 	return 0;
 }	//Fin de la FUNCION MAIN
@@ -146,3 +163,41 @@ int read_char_in_peoc_state(char char_from_input_array){
 
 	return COMMENT;
 }	//La funcion analiza si finalizo el comentario o no
+//-----------------------------------------------------------
+int print_input_array_until_end_of_string(char* part_of_input_array, int i){
+	do
+	{
+		putchar(part_of_input_array[i]);
+		i++;
+	}
+	while(part_of_input_array[i]!='"');
+
+	return i;
+}	//La funcion imprime todos los caracteres que esten entre ""
+//------------------------------------------------------------
+bool run_program_again(){
+
+	char continue_exec;
+
+	printf("\n\nDesea continuar con la ejecucion del Programa? [Y/n]\n");
+        do
+        {
+                scanf("%c",&continue_exec);
+        }
+        while(continue_exec!='Y' && continue_exec!='n');
+
+	if(continue_exec=='Y')
+        {
+                return false;
+        } else if (continue_exec=='n')
+        {
+                return true;
+        }
+	return true;
+}	//La funcion permite volver a ejecutar el programa sin salir del mismo
+//------------------------------------------------------------------
+void empty_array_for_new_program(char *input_array){
+	int i=0;
+	for(i=0;i<=MAXLENGTH-1;i++)
+		input_array[i]='\0';
+}
