@@ -5,6 +5,8 @@
 
 //ESTADOS DEL AUTOMATA
 enum states {
+ 	QUOTE1,
+	QUOTE1_FINAL,
 	NO_COMMENT,
 	POSSIBLE_COMMENT,
 	LINE_COMMENT,
@@ -62,6 +64,10 @@ int main()
 					state=STRING;
 					putchar(input_array[input_char]);
 					break;
+				} else if (function_return==QUOTE1){
+					state = QUOTE1
+					putchar(input_array[input_char]);
+					break;	
 				}
 				putchar(input_array[input_char]);
 			break;
@@ -75,6 +81,26 @@ int main()
 				}
 				putchar(input_array[input_char]);
 			break;
+			case QUOTE1:
+				function_return=read_char_in_quote1_state(input_array[input_char]);
+				if(function_return==NO_COMMENT)
+				{
+					state=NO_COMMENT;
+					putchar(input_array[input_char]);
+					break;
+				}
+				putchar(input_array[input_char]);
+			break;
+		  	case QUOTE1_FINAL:
+				function_return=read_char_in_quote1_final_state(input_array[input_char]);
+				if(function_return==NO_COMMENT)
+				{
+					state=NO_COMMENT;
+					putchar(input_array[input_char]);
+					break;
+				}
+				putchar(input_array[input_char]);
+			break;					
 			case POSSIBLE_COMMENT:
 				function_return=read_char_in_pc_state(input_array[input_char]);
 				if(function_return==NO_COMMENT){
@@ -181,6 +207,22 @@ int read_char_in_string_state(char char_from_input_array){
 		return NO_COMMENT;
 	return COMMENT;
 }	//La funcion analiza si el string termino o no
+//-----------------------------------------------------------
+int read_char_in_quote1_state(char char_from_input_array){
+	if(char_from_input_array=='\'')
+	{/* ERROR no existe caracter vacío */}
+
+	return QUOTE1_FINAL;
+
+}	//La funcion analiza el caracter (apostrofos)
+//-----------------------------------------------------------
+int read_char_in_quote1_final_state(char char_from_input_array){
+	if(char_from_input_array!='\'')
+	{
+		/* ERROR Más de un caracter entre apostrofos */
+	}
+	return NO_COMMENT;
+}	//La funcion analiza el caracter (apostrofos) para finalizar
 //------------------------------------------------------------
 bool run_program_again(){
 
